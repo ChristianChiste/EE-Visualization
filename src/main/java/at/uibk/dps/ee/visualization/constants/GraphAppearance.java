@@ -2,6 +2,9 @@ package at.uibk.dps.ee.visualization.constants;
 
 import java.awt.Color;
 
+import at.uibk.dps.ee.core.enactable.Enactable.State;
+import at.uibk.dps.ee.model.properties.PropertyServiceData;
+import at.uibk.dps.ee.model.properties.PropertyServiceFunction;
 import net.sf.opendse.model.Communication;
 import net.sf.opendse.model.Node;
 import net.sf.opendse.model.Task;
@@ -31,8 +34,15 @@ public final class GraphAppearance {
 	protected static final EGNodeShape shapeData = EGNodeShape.Rectangle;
 
 	// colors
-	protected static final Color colorFunction = Graphics.GREEN;
-	protected static final Color colorData = Graphics.BLUE;
+	protected static final Color colorFunctionModel = Graphics.GREEN;
+	protected static final Color colorFunctionWaiting = Graphics.GRAY;
+	protected static final Color colorFunctionReady = Graphics.YELLOW;
+	protected static final Color colorFunctionRunning = Graphics.BLUE;
+	protected static final Color colorFunctionFinished = Graphics.GREEN;
+
+	protected static final Color colorDataModel = Graphics.BLUE;
+	protected static final Color colorDataUnavailable = Graphics.GRAY;
+	protected static final Color colorDataAvailable = Graphics.GREEN;
 
 	// sizes
 	protected static final int sizeFunction = 20;
@@ -59,18 +69,48 @@ public final class GraphAppearance {
 			throw new IllegalArgumentException("Unknown type of node: " + node.getId());
 		}
 	}
-	
+
 	/**
-	 * Returns the color for the given node.
+	 * Returns the color for the given node when draws as model visualization.
 	 * 
 	 * @param node the given node
 	 * @return the color for the given node.
 	 */
-	public static final Color getColor(Node node) {
+	public static final Color getColorModel(Node node) {
 		if (node instanceof Communication) {
-			return colorData;
+			return colorDataModel;
 		} else if (node instanceof Task) {
-			return colorFunction;
+			return colorFunctionModel;
+		} else {
+			throw new IllegalArgumentException("Unknown type of node: " + node.getId());
+		}
+	}
+
+	/**
+	 * Returns the color for the given node when draws as process visualization.
+	 * 
+	 * @param node the given node
+	 * @return the color for the given node.
+	 */
+	public static final Color getColorProcess(Node node) {
+		if (node instanceof Communication) {
+			// data node
+			return PropertyServiceData.isDataAvailable((Task) node) ? colorDataAvailable : colorDataUnavailable;
+		} else if (node instanceof Task) {
+			// function node
+			State state = PropertyServiceFunction.getEnactableState((Task) node);
+			switch (state) {
+			case WAITING:
+				return colorFunctionWaiting;
+			case RUNNING:
+				return colorFunctionRunning;
+			case READY:
+				return colorFunctionReady;
+			case FINISHED:
+				return colorFunctionFinished;
+			default:
+				throw new IllegalStateException("Unexpected enactable state " + state.name());
+			}
 		} else {
 			throw new IllegalArgumentException("Unknown type of node: " + node.getId());
 		}

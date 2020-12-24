@@ -9,6 +9,7 @@ package at.uibk.dps.ee.visualization.constants;
 public final class ConstantsVisulization {
 
 	public static final String ModelViewerTitle = "Enactment Graph Viewer";
+	public static final String ProcessViewerTitle = "Enactment Process Viewer";
 
 	/**
 	 * No Constructor

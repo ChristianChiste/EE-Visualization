@@ -1,24 +1,18 @@
-package at.uibk.dps.ee.visualization.model;
+package at.uibk.dps.ee.visualization.utils;
 
 import static org.junit.Assert.*;
-
 import org.junit.Test;
 
-import at.uibk.dps.ee.model.graph.EnactmentGraph;
 import net.sf.opendse.model.Communication;
 import net.sf.opendse.model.Dependency;
 import net.sf.opendse.model.Element;
 import net.sf.opendse.model.Resource;
 import net.sf.opendse.model.Task;
 
-import static org.mockito.Mockito.mock;
-
-public class GraphPanelFormatModelTest {
+public class UtilsVizGraphTest {
 
 	@Test
 	public void testElementCopyOkay() {
-		EnactmentGraph mockGraph = mock(EnactmentGraph.class);
-		GraphPanelFormatModel tested = new GraphPanelFormatModel(mockGraph);
 		
 		Task task = new Task("t");
 		task.setAttribute("attrT", 1);
@@ -29,9 +23,9 @@ public class GraphPanelFormatModelTest {
 		Dependency dep = new Dependency("dep");
 		dep.setAttribute("attrD", 3.2);
 		
-		Element result1 = tested.copy(task);
-		Element result2 = tested.copy(comm);
-		Element result3 = tested.copy(dep);
+		Element result1 = UtilsVizGraph.copy(task);
+		Element result2 = UtilsVizGraph.copy(comm);
+		Element result3 = UtilsVizGraph.copy(dep);
 		
 		assertTrue(result1 instanceof Task);
 		assertTrue(result2 instanceof Communication);
@@ -44,9 +38,8 @@ public class GraphPanelFormatModelTest {
 	
 	@Test(expected = IllegalArgumentException.class)
 	public void testElementCopyUnknown() {
-		EnactmentGraph mockGraph = mock(EnactmentGraph.class);
-		GraphPanelFormatModel tested = new GraphPanelFormatModel(mockGraph);
 		Resource res = new Resource("res");
-		tested.copy(res);
+		UtilsVizGraph.copy(res);
 	}
+
 }
