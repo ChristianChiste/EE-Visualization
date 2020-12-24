@@ -61,7 +61,7 @@ public class GraphPanelFormatModel extends AbstractGraphPanelFormat {
 	public int getSize(Node node) {
 		return GraphAppearance.getSize(node);
 	}
-	
+
 	@Override
 	public Color getColor(Node node) {
 		return GraphAppearance.getColorModel(node);
@@ -85,15 +85,15 @@ public class GraphPanelFormatModel extends AbstractGraphPanelFormat {
 	 * @return the shape object
 	 */
 	protected Shape getShapeForEnum(EGNodeShape shapeEnum, Node node) {
-		return switch (shapeEnum) {
+		switch (shapeEnum) {
 		case Ellipse: {
-			yield shapes.getEllipse(node);
+			return shapes.getEllipse(node);
 		}
 		case Rectangle: {
-			yield shapes.getRectangle(node);
+			return shapes.getRectangle(node);
 		}
 		default:
 			throw new IllegalArgumentException("Unexpected value: " + shapeEnum.name());
-		};
+		}
 	}
 }
