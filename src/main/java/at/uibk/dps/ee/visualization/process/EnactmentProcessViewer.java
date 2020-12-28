@@ -9,6 +9,7 @@ import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.WindowConstants;
 
 import org.opt4j.core.start.Constant;
+import org.opt4j.viewer.ToolBar;
 import org.opt4j.viewer.Viewport;
 
 import com.google.inject.Inject;
@@ -36,14 +37,16 @@ public class EnactmentProcessViewer implements EnactableStateListener, Enactment
 	// graphic elements
 	protected JFrame frame = null; // the overall window
 	protected final Viewport viewPort; // the viewport for the visualizations
+	protected final ToolBar toolBar; // the bar with the buttons
 
 	protected final EnactmentProcessWidget widget;
 
 	@Inject
-	public EnactmentProcessViewer(Viewport viewport, EnactmentProcessWidget enactmentWidget,
+	public EnactmentProcessViewer(Viewport viewport, ToolBar toolBar, EnactmentProcessWidget enactmentWidget,
 			@Constant(namespace = EnactmentProcessViewer.class, value = "closeOnTerminate") boolean closeOnStop) {
 		this.closeOnStop = closeOnStop;
 		this.viewPort = viewport;
+		this.toolBar = toolBar;
 		this.widget = enactmentWidget;
 	}
 
@@ -66,7 +69,9 @@ public class EnactmentProcessViewer implements EnactableStateListener, Enactment
 		frame.setPreferredSize(new Dimension(800, 600));
 
 		viewPort.init();
+		toolBar.init();
 		frame.add(viewPort.get(), BorderLayout.CENTER);
+		frame.add(toolBar.get(), BorderLayout.NORTH);
 
 		// TODO we could add an actual termination of the enactment if the window is
 		// closed (as well as add the option for a termination)

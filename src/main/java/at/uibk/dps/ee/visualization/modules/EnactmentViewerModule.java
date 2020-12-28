@@ -6,6 +6,7 @@ import org.opt4j.core.start.Constant;
 import org.opt4j.viewer.Viewport;
 
 import at.uibk.dps.ee.guice.modules.VisualizationModule;
+import at.uibk.dps.ee.visualization.control.ControlToolBarService;
 import at.uibk.dps.ee.visualization.process.EnactmentProcessViewer;
 
 /**
@@ -36,5 +37,7 @@ public class EnactmentViewerModule extends VisualizationModule{
 		
 		addEnactableStateListener(EnactmentProcessViewer.class);
 		addEnactmentStateListener(EnactmentProcessViewer.class);
+		
+		addToolBarService(ControlToolBarService.class);
 	}
 }
