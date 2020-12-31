@@ -4,6 +4,7 @@ import java.awt.Color;
 
 import at.uibk.dps.ee.core.enactable.Enactable.State;
 import at.uibk.dps.ee.model.properties.PropertyServiceData;
+import at.uibk.dps.ee.model.properties.PropertyServiceData.NodeType;
 import at.uibk.dps.ee.model.properties.PropertyServiceFunction;
 import net.sf.opendse.model.Communication;
 import net.sf.opendse.model.Node;
@@ -34,15 +35,19 @@ public final class GraphAppearance {
 	protected static final EGNodeShape shapeData = EGNodeShape.Rectangle;
 
 	// colors
+	
+	// functions
 	protected static final Color colorFunctionModel = Graphics.GREEN;
 	protected static final Color colorFunctionWaiting = Graphics.GRAY;
 	protected static final Color colorFunctionReady = Graphics.YELLOW;
 	protected static final Color colorFunctionRunning = Graphics.BLUE;
 	protected static final Color colorFunctionFinished = Graphics.GREEN;
 
+	// data
 	protected static final Color colorDataModel = Graphics.BLUE;
 	protected static final Color colorDataUnavailable = Graphics.GRAY;
 	protected static final Color colorDataAvailable = Graphics.GREEN;
+	protected static final Color colorDataConstant = Graphics.LAWNGREEN;
 
 	// sizes
 	protected static final int sizeFunction = 20;
@@ -95,7 +100,16 @@ public final class GraphAppearance {
 	public static final Color getColorProcess(Node node) {
 		if (node instanceof Communication) {
 			// data node
-			return PropertyServiceData.isDataAvailable((Task) node) ? colorDataAvailable : colorDataUnavailable;
+			Communication dataNode = (Communication) node;
+			NodeType nodeType = PropertyServiceData.getNodeType(dataNode);
+			switch (nodeType) {
+			case Default:
+				return PropertyServiceData.isDataAvailable((Task) node) ? colorDataAvailable : colorDataUnavailable;
+			case Constant:
+				return colorDataConstant;
+			default:
+				throw new IllegalStateException("No color known for data node of type " + nodeType.name());
+			}
 		} else if (node instanceof Task) {
 			// function node
 			State state = PropertyServiceFunction.getEnactableState((Task) node);
