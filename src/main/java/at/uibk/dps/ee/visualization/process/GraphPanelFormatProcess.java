@@ -12,15 +12,15 @@ import net.sf.opendse.model.Node;
 
 /**
  * 
- * The {@link GraphPanelFormalProcess} defines how the enactment process is
+ * The {@link GraphPanelFormatProcess} defines how the enactment process is
  * visualized by the {@link GraphPanelProcess}.
  * 
  * @author Fedor Smirnov
  *
  */
-public class GraphPanelFormalProcess extends GraphPanelFormatModel {
+public class GraphPanelFormatProcess extends GraphPanelFormatModel {
 
-	public GraphPanelFormalProcess(EnactmentGraph originalGraph) {
+	public GraphPanelFormatProcess(EnactmentGraph originalGraph) {
 		super(originalGraph);
 	}
 

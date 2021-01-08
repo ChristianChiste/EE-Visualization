@@ -6,6 +6,7 @@ import at.uibk.dps.ee.core.enactable.Enactable.State;
 import at.uibk.dps.ee.model.properties.PropertyServiceData;
 import at.uibk.dps.ee.model.properties.PropertyServiceData.NodeType;
 import at.uibk.dps.ee.model.properties.PropertyServiceFunction;
+import at.uibk.dps.ee.model.properties.PropertyServiceFunction.FunctionType;
 import net.sf.opendse.model.Communication;
 import net.sf.opendse.model.Node;
 import net.sf.opendse.model.Task;
@@ -42,12 +43,16 @@ public final class GraphAppearance {
 	protected static final Color colorFunctionReady = Graphics.YELLOW;
 	protected static final Color colorFunctionRunning = Graphics.BLUE;
 	protected static final Color colorFunctionFinished = Graphics.GREEN;
+	protected static final Color colorFunctionUtility = Graphics.VIOLET;
+	protected static final Color colorFunctionSyntax = Graphics.CHOCOLATE;
 
 	// data
 	protected static final Color colorDataModel = Graphics.BLUE;
 	protected static final Color colorDataUnavailable = Graphics.GRAY;
 	protected static final Color colorDataAvailable = Graphics.GREEN;
 	protected static final Color colorDataConstant = Graphics.LAWNGREEN;
+	protected static final Color colorDecisionTrue = Graphics.BLUE;
+	protected static final Color colorDecisionFalse = Graphics.RED;
 
 	// sizes
 	protected static final int sizeFunction = 20;
@@ -104,15 +109,29 @@ public final class GraphAppearance {
 			NodeType nodeType = PropertyServiceData.getNodeType(dataNode);
 			switch (nodeType) {
 			case Default:
-				return PropertyServiceData.isDataAvailable((Task) node) ? colorDataAvailable : colorDataUnavailable;
+				return PropertyServiceData.isDataAvailable(dataNode) ? colorDataAvailable : colorDataUnavailable;
 			case Constant:
 				return colorDataConstant;
+			case Decision:
+				if (PropertyServiceData.isDataAvailable(dataNode)) {
+					return getDecisionVariableContent(dataNode) ? colorDecisionTrue : colorDecisionFalse;
+				}else {
+					return colorDataUnavailable;
+				}
+				
 			default:
 				throw new IllegalStateException("No color known for data node of type " + nodeType.name());
 			}
 		} else if (node instanceof Task) {
 			// function node
-			State state = PropertyServiceFunction.getEnactableState((Task) node);
+			Task taskNode = (Task) node;
+			if (PropertyServiceFunction.getType(taskNode).equals(FunctionType.DataFlow)) {
+				return colorFunctionSyntax;
+			}
+			if (PropertyServiceFunction.getType(taskNode).equals(FunctionType.Utility)) {
+				return colorFunctionUtility;
+			}
+			State state = PropertyServiceFunction.getEnactableState(taskNode);
 			switch (state) {
 			case WAITING:
 				return colorFunctionWaiting;
@@ -128,6 +147,16 @@ public final class GraphAppearance {
 		} else {
 			throw new IllegalArgumentException("Unknown type of node: " + node.getId());
 		}
+	}
+	
+	/**
+	 * Returns the boolean value stored in the given decision variable task.
+	 * 
+	 * @param decisionVariableTask the given decision variable task.
+	 * @return the boolean value stored in the given decision variable task
+	 */
+	protected static boolean getDecisionVariableContent(Task decisionVariableTask) {
+		return PropertyServiceData.getContent(decisionVariableTask).getAsBoolean();
 	}
 
 	/**
