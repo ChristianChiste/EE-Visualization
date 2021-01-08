@@ -41,6 +41,9 @@ dependencies {
 	implementation 'com.github.FedorSmirnov89:opt4j:-SNAPSHOT'
 	// dependency to opendse
 	implementation 'com.github.FedorSmirnov89:opendse:-SNAPSHOT'
+	
+	implementation 'com.google.code.gson:gson:2.8.6'
+	
 	// test dependencies	
 	testCompile group: 'junit', 		name: 'junit', 					version: '4.+'
 	testCompile group: 'org.mockito',     name: 'mockito-core',     version: '3.4.4'
