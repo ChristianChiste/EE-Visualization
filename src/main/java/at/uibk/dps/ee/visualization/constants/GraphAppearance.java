@@ -131,7 +131,7 @@ public final class GraphAppearance {
 			if (PropertyServiceFunction.getType(taskNode).equals(FunctionType.Utility)) {
 				return colorFunctionUtility;
 			}
-			State state = PropertyServiceFunction.getEnactableState(taskNode);
+			State state = PropertyServiceFunction.getEnactable(taskNode).getState();
 			switch (state) {
 			case WAITING:
 				return colorFunctionWaiting;
