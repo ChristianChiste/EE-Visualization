@@ -33,7 +33,21 @@ public class GraphPanelProcess extends JPanel{
 		}
 		this.setLayout(new BorderLayout());
 		this.graph = graph;
+		createGraphPanel();
+	}
+	
+	protected void createGraphPanel() {
+		if (this.graphPanel != null) {
+			this.remove(graphPanel);
+		}
 		graphPanel = new GraphPanel(new GraphPanelFormatProcess(graph), new ElementSelection());
 		this.add(graphPanel);
+		revalidate();
+		repaint();
+	}
+	
+	public void update() {
+		System.out.println("created");
+		createGraphPanel();
 	}
 }

@@ -39,5 +39,7 @@ public class EnactmentViewerModule extends VisualizationModule{
 		addEnactmentStateListener(EnactmentProcessViewer.class);
 		
 		addToolBarService(ControlToolBarService.class);
+		
+		addModelModificationListener(EnactmentProcessViewer.class);
 	}
 }

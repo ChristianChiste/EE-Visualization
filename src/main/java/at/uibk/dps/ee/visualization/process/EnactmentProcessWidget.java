@@ -36,4 +36,8 @@ public class EnactmentProcessWidget implements Widget{
 	public void init(Viewport viewport) {
 		// Nothing to do here
 	}
+
+	public void update() {
+		panel.update();
+	}
 }

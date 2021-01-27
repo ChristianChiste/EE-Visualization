@@ -15,6 +15,7 @@ import org.opt4j.viewer.Viewport;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import at.uibk.dps.ee.core.ModelModificationListener;
 import at.uibk.dps.ee.core.enactable.Enactable;
 import at.uibk.dps.ee.core.enactable.Enactable.State;
 import at.uibk.dps.ee.visualization.constants.ConstantsVisulization;
@@ -29,7 +30,7 @@ import at.uibk.dps.ee.core.enactable.EnactmentStateListener;
  *
  */
 @Singleton
-public class EnactmentProcessViewer implements EnactableStateListener, EnactmentStateListener {
+public class EnactmentProcessViewer implements EnactableStateListener, EnactmentStateListener, ModelModificationListener {
 
 	// config attributes
 	protected final boolean closeOnStop;
@@ -92,6 +93,14 @@ public class EnactmentProcessViewer implements EnactableStateListener, Enactment
 	@Override
 	public void enactableStateChanged(Enactable enactable, State previousState, State currentState) {
 		if (frame != null) {
+			frame.repaint();
+		}
+	}
+	
+	@Override
+	public void reactToModelModification() {
+		if (frame != null) {
+			widget.update();
 			frame.repaint();
 		}
 	}
