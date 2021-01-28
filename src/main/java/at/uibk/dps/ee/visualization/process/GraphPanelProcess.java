@@ -47,7 +47,6 @@ public class GraphPanelProcess extends JPanel{
 	}
 	
 	public void update() {
-		System.out.println("created");
 		createGraphPanel();
 	}
 }
