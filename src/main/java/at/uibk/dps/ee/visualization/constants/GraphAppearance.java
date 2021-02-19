@@ -6,172 +6,177 @@ import at.uibk.dps.ee.core.enactable.Enactable.State;
 import at.uibk.dps.ee.model.properties.PropertyServiceData;
 import at.uibk.dps.ee.model.properties.PropertyServiceData.NodeType;
 import at.uibk.dps.ee.model.properties.PropertyServiceFunction;
-import at.uibk.dps.ee.model.properties.PropertyServiceFunction.FunctionType;
+import at.uibk.dps.ee.model.properties.PropertyServiceFunction.UsageType;
 import net.sf.opendse.model.Communication;
 import net.sf.opendse.model.Node;
 import net.sf.opendse.model.Task;
 import net.sf.opendse.visualization.Graphics;
 
 /**
- * Static method container for the configuration of the appearance of the graph
- * visualizations.
+ * Static method container for the configuration of the appearance of the graph visualizations.
  * 
  * @author Fedor Smirnov
  *
  */
 public final class GraphAppearance {
 
-	/**
-	 * The node shapes used for the visualization of enactment graphs.
-	 * 
-	 * @author Fedor Smirnov
-	 *
-	 */
-	public enum EGNodeShape {
-		Ellipse, Rectangle
-	}
+  /**
+   * The node shapes used for the visualization of enactment graphs.
+   * 
+   * @author Fedor Smirnov
+   *
+   */
+  public enum EGNodeShape {
+    Ellipse, Rectangle
+  }
 
-	// shapes
-	protected static final EGNodeShape shapeFunction = EGNodeShape.Ellipse;
-	protected static final EGNodeShape shapeData = EGNodeShape.Rectangle;
+  // shapes
+  protected static final EGNodeShape shapeFunction = EGNodeShape.Ellipse;
+  protected static final EGNodeShape shapeData = EGNodeShape.Rectangle;
 
-	// colors
-	
-	// functions
-	protected static final Color colorFunctionModel = Graphics.GREEN;
-	protected static final Color colorFunctionWaiting = Graphics.GRAY;
-	protected static final Color colorFunctionReady = Graphics.YELLOW;
-	protected static final Color colorFunctionRunning = Graphics.BLUE;
-	protected static final Color colorFunctionFinished = Graphics.GREEN;
-	protected static final Color colorFunctionUtility = Graphics.VIOLET;
-	protected static final Color colorFunctionSyntax = Graphics.CHOCOLATE;
+  // colors
 
-	// data
-	protected static final Color colorDataModel = Graphics.BLUE;
-	protected static final Color colorDataUnavailable = Graphics.GRAY;
-	protected static final Color colorDataAvailable = Graphics.GREEN;
-	protected static final Color colorDataConstant = Graphics.LAWNGREEN;
-	protected static final Color colorDecisionTrue = Graphics.BLUE;
-	protected static final Color colorDecisionFalse = Graphics.RED;
+  // functions
+  protected static final Color colorFunctionModel = Graphics.GREEN;
+  protected static final Color colorFunctionWaiting = Graphics.GRAY;
+  protected static final Color colorFunctionReady = Graphics.YELLOW;
+  protected static final Color colorFunctionRunning = Graphics.BLUE;
+  protected static final Color colorFunctionFinished = Graphics.GREEN;
+  protected static final Color colorFunctionUtility = Graphics.VIOLET;
+  protected static final Color colorFunctionSyntax = Graphics.CHOCOLATE;
+  protected static final Color colorFunctionError = Graphics.RED;
 
-	// sizes
-	protected static final int sizeFunction = 20;
-	protected static final int sizeData = 15;
+  // data
+  protected static final Color colorDataModel = Graphics.BLUE;
+  protected static final Color colorDataUnavailable = Graphics.GRAY;
+  protected static final Color colorDataAvailable = Graphics.GREEN;
+  protected static final Color colorDataConstant = Graphics.LAWNGREEN;
+  protected static final Color colorDecisionTrue = Graphics.BLUE;
+  protected static final Color colorDecisionFalse = Graphics.RED;
 
-	/**
-	 * No constructor.
-	 */
-	private GraphAppearance() {
-	}
+  // sizes
+  protected static final int sizeFunction = 20;
+  protected static final int sizeData = 15;
 
-	/**
-	 * Returns the shape enum for the given node.
-	 * 
-	 * @param node the given node
-	 * @return the shape enum for the given node
-	 */
-	public static final EGNodeShape getShape(Node node) {
-		if (node instanceof Communication) {
-			return shapeData;
-		} else if (node instanceof Task) {
-			return shapeFunction;
-		} else {
-			throw new IllegalArgumentException("Unknown type of node: " + node.getId());
-		}
-	}
+  /**
+   * No constructor.
+   */
+  private GraphAppearance() {}
 
-	/**
-	 * Returns the color for the given node when draws as model visualization.
-	 * 
-	 * @param node the given node
-	 * @return the color for the given node.
-	 */
-	public static final Color getColorModel(Node node) {
-		if (node instanceof Communication) {
-			return colorDataModel;
-		} else if (node instanceof Task) {
-			return colorFunctionModel;
-		} else {
-			throw new IllegalArgumentException("Unknown type of node: " + node.getId());
-		}
-	}
+  /**
+   * Returns the shape enum for the given node.
+   * 
+   * @param node the given node
+   * @return the shape enum for the given node
+   */
+  public static final EGNodeShape getShape(Node node) {
+    if (node instanceof Communication) {
+      return shapeData;
+    } else if (node instanceof Task) {
+      return shapeFunction;
+    } else {
+      throw new IllegalArgumentException("Unknown type of node: " + node.getId());
+    }
+  }
 
-	/**
-	 * Returns the color for the given node when draws as process visualization.
-	 * 
-	 * @param node the given node
-	 * @return the color for the given node.
-	 */
-	public static final Color getColorProcess(Node node) {
-		if (node instanceof Communication) {
-			// data node
-			Communication dataNode = (Communication) node;
-			NodeType nodeType = PropertyServiceData.getNodeType(dataNode);
-			switch (nodeType) {
-			case Default:
-				return PropertyServiceData.isDataAvailable(dataNode) ? colorDataAvailable : colorDataUnavailable;
-			case Constant:
-				return colorDataConstant;
-			case Decision:
-				if (PropertyServiceData.isDataAvailable(dataNode)) {
-					return getDecisionVariableContent(dataNode) ? colorDecisionTrue : colorDecisionFalse;
-				}else {
-					return colorDataUnavailable;
-				}
-				
-			default:
-				throw new IllegalStateException("No color known for data node of type " + nodeType.name());
-			}
-		} else if (node instanceof Task) {
-			// function node
-			Task taskNode = (Task) node;
-			if (PropertyServiceFunction.getType(taskNode).equals(FunctionType.DataFlow)) {
-				return colorFunctionSyntax;
-			}
-			if (PropertyServiceFunction.getType(taskNode).equals(FunctionType.Utility)) {
-				return colorFunctionUtility;
-			}
-			State state = PropertyServiceFunction.getEnactable(taskNode).getState();
-			switch (state) {
-			case WAITING:
-				return colorFunctionWaiting;
-			case RUNNING:
-				return colorFunctionRunning;
-			case READY:
-				return colorFunctionReady;
-			case FINISHED:
-				return colorFunctionFinished;
-			default:
-				throw new IllegalStateException("Unexpected enactable state " + state.name());
-			}
-		} else {
-			throw new IllegalArgumentException("Unknown type of node: " + node.getId());
-		}
-	}
-	
-	/**
-	 * Returns the boolean value stored in the given decision variable task.
-	 * 
-	 * @param decisionVariableTask the given decision variable task.
-	 * @return the boolean value stored in the given decision variable task
-	 */
-	protected static boolean getDecisionVariableContent(Task decisionVariableTask) {
-		return PropertyServiceData.getContent(decisionVariableTask).getAsBoolean();
-	}
+  /**
+   * Returns the color for the given node when draws as model visualization.
+   * 
+   * @param node the given node
+   * @return the color for the given node.
+   */
+  public static final Color getColorModel(Node node) {
+    if (node instanceof Communication) {
+      return colorDataModel;
+    } else if (node instanceof Task) {
+      return colorFunctionModel;
+    } else {
+      throw new IllegalArgumentException("Unknown type of node: " + node.getId());
+    }
+  }
 
-	/**
-	 * Returns the size of the given node.
-	 * 
-	 * @param node the given node
-	 * @return the size of the given node
-	 */
-	public static final int getSize(Node node) {
-		if (node instanceof Communication) {
-			return sizeData;
-		} else if (node instanceof Task) {
-			return sizeFunction;
-		} else {
-			throw new IllegalArgumentException("Unknown type of node: " + node.getId());
-		}
-	}
+  /**
+   * Returns the color for the given node when draws as process visualization.
+   * 
+   * @param node the given node
+   * @return the color for the given node.
+   */
+  public static final Color getColorProcess(Node node) {
+    if (node instanceof Communication) {
+      // data node
+      Communication dataNode = (Communication) node;
+      NodeType nodeType = PropertyServiceData.getNodeType(dataNode);
+      switch (nodeType) {
+        case Default:
+          return PropertyServiceData.isDataAvailable(dataNode) ? colorDataAvailable
+              : colorDataUnavailable;
+        case Constant:
+          return colorDataConstant;
+        case Decision:
+          if (PropertyServiceData.isDataAvailable(dataNode)) {
+            return getDecisionVariableContent(dataNode) ? colorDecisionTrue : colorDecisionFalse;
+          } else {
+            return colorDataUnavailable;
+          }
+
+        default:
+          throw new IllegalStateException(
+              "No color known for data node of type " + nodeType.name());
+      }
+    } else if (node instanceof Task) {
+      // function node
+      Task taskNode = (Task) node;
+      if (PropertyServiceFunction.getUsageType(taskNode).equals(UsageType.DataFlow)) {
+        return colorFunctionSyntax;
+      }
+      if (PropertyServiceFunction.getUsageType(taskNode).equals(UsageType.Utility)) {
+        return colorFunctionUtility;
+      }
+      State state = PropertyServiceFunction.getEnactable(taskNode).getState();
+      switch (state) {
+        case WAITING:
+          return colorFunctionWaiting;
+        case RUNNING:
+          return colorFunctionRunning;
+        case SCHEDULABLE:
+          return colorFunctionReady;
+        case LAUNCHABLE:
+          return colorFunctionReady; // TODO give it a different color
+        case FINISHED:
+          return colorFunctionFinished;
+        case STOPPED:
+          return colorFunctionError;
+        default:
+          throw new IllegalStateException("Unexpected enactable state " + state.name());
+      }
+    } else {
+      throw new IllegalArgumentException("Unknown type of node: " + node.getId());
+    }
+  }
+
+  /**
+   * Returns the boolean value stored in the given decision variable task.
+   * 
+   * @param decisionVariableTask the given decision variable task.
+   * @return the boolean value stored in the given decision variable task
+   */
+  protected static boolean getDecisionVariableContent(Task decisionVariableTask) {
+    return PropertyServiceData.getContent(decisionVariableTask).getAsBoolean();
+  }
+
+  /**
+   * Returns the size of the given node.
+   * 
+   * @param node the given node
+   * @return the size of the given node
+   */
+  public static final int getSize(Node node) {
+    if (node instanceof Communication) {
+      return sizeData;
+    } else if (node instanceof Task) {
+      return sizeFunction;
+    } else {
+      throw new IllegalArgumentException("Unknown type of node: " + node.getId());
+    }
+  }
 }
