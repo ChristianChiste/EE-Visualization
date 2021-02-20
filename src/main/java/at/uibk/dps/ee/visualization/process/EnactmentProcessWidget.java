@@ -7,8 +7,8 @@ import org.opt4j.viewer.Widget;
 
 import com.google.inject.Inject;
 
-import at.uibk.dps.ee.model.graph.EnactmentGraph;
-import at.uibk.dps.ee.model.graph.EnactmentGraphProvider;
+import at.uibk.dps.ee.model.graph.EnactmentSpecification;
+import at.uibk.dps.ee.model.graph.SpecificationProvider;
 
 /**
  * The widget to display the state of the enactment.
@@ -16,28 +16,29 @@ import at.uibk.dps.ee.model.graph.EnactmentGraphProvider;
  * @author Fedor Smirnov
  *
  */
-public class EnactmentProcessWidget implements Widget{
+public class EnactmentProcessWidget implements Widget {
 
-	protected final EnactmentGraph enactmentGraph;
-	protected GraphPanelProcess panel;
-	
-	@Inject
-	public EnactmentProcessWidget(EnactmentGraphProvider graphProvider) {
-		this.enactmentGraph = graphProvider.getEnactmentGraph();
-		this.panel = new GraphPanelProcess(enactmentGraph);
-	}
-	
-	@Override
-	public JPanel getPanel() {
-		return panel;
-	}
+  protected final EnactmentSpecification spec;
 
-	@Override
-	public void init(Viewport viewport) {
-		// Nothing to do here
-	}
+  protected EnactmentPanel panel;
 
-	public void update() {
-		panel.update();
-	}
+  @Inject
+  public EnactmentProcessWidget(SpecificationProvider specProvider) {
+    this.spec = specProvider.getSpecification();
+    this.panel = new EnactmentPanel(spec);
+  }
+
+  @Override
+  public JPanel getPanel() {
+    return panel;
+  }
+
+  @Override
+  public void init(Viewport viewport) {
+    // Nothing to do here
+  }
+
+  public void update() {
+    panel.update();
+  }
 }
