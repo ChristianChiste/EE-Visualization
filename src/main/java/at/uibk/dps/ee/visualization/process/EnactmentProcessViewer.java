@@ -2,7 +2,9 @@ package at.uibk.dps.ee.visualization.process;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import javax.swing.JFrame;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
@@ -15,11 +17,8 @@ import org.opt4j.viewer.Viewport;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
-import at.uibk.dps.ee.core.ModelModificationListener;
-import at.uibk.dps.ee.core.enactable.Enactable;
-import at.uibk.dps.ee.core.enactable.Enactable.State;
 import at.uibk.dps.ee.visualization.constants.ConstantsVisulization;
-import at.uibk.dps.ee.core.enactable.EnactableStateListener;
+import at.uibk.dps.ee.core.ModelModificationListener;
 import at.uibk.dps.ee.core.enactable.EnactmentStateListener;
 
 /**
@@ -30,78 +29,90 @@ import at.uibk.dps.ee.core.enactable.EnactmentStateListener;
  *
  */
 @Singleton
-public class EnactmentProcessViewer implements EnactableStateListener, EnactmentStateListener, ModelModificationListener {
+public class EnactmentProcessViewer implements EnactmentStateListener, ModelModificationListener {
 
-	// config attributes
-	protected final boolean closeOnStop;
+  // config attributes
+  protected final boolean closeOnStop;
 
-	// graphic elements
-	protected JFrame frame = null; // the overall window
-	protected final Viewport viewPort; // the viewport for the visualizations
-	protected final ToolBar toolBar; // the bar with the buttons
+  // graphic elements
+  protected JFrame frame = null; // the overall window
+  protected final Viewport viewPort; // the viewport for the visualizations
+  protected final ToolBar toolBar; // the bar with the buttons
 
-	protected final EnactmentProcessWidget widget;
+  protected final EnactmentProcessWidget widget;
+  protected final ScheduledExecutorService updateScheduler;
+  protected final int updatePeriod;
 
-	@Inject
-	public EnactmentProcessViewer(Viewport viewport, ToolBar toolBar, EnactmentProcessWidget enactmentWidget,
-			@Constant(namespace = EnactmentProcessViewer.class, value = "closeOnTerminate") boolean closeOnStop) {
-		this.closeOnStop = closeOnStop;
-		this.viewPort = viewport;
-		this.toolBar = toolBar;
-		this.widget = enactmentWidget;
-	}
+  @Inject
+  public EnactmentProcessViewer(Viewport viewport, ToolBar toolBar,
+      EnactmentProcessWidget enactmentWidget,
+      @Constant(namespace = EnactmentProcessViewer.class,
+          value = "closeOnTerminate") boolean closeOnStop,
+      @Constant(namespace = EnactmentProcessViewer.class,
+          value = "updatePeriod") int updatePeriod) {
+    this.closeOnStop = closeOnStop;
+    this.viewPort = viewport;
+    this.toolBar = toolBar;
+    this.widget = enactmentWidget;
+    this.updateScheduler = Executors.newSingleThreadScheduledExecutor();
+    this.updatePeriod = updatePeriod;
+  }
 
-	@Override
-	public void enactmentStarted() {
-		try {
-			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		} catch (ClassNotFoundException | UnsupportedLookAndFeelException | IllegalAccessException
-				| InstantiationException exc) {
-			throw new IllegalStateException("Exception thrown when setting the look & feel of the enactment viewer.");
-		}
-		EnactmentProcessViewer.this.frame = new JFrame();
-		final JFrame frame = EnactmentProcessViewer.this.frame;
+  @Override
+  public void enactmentStarted() {
+    try {
+      UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+    } catch (ClassNotFoundException | UnsupportedLookAndFeelException | IllegalAccessException
+        | InstantiationException exc) {
+      throw new IllegalStateException(
+          "Exception thrown when setting the look & feel of the enactment viewer.");
+    }
+    EnactmentProcessViewer.this.frame = new JFrame();
+    final JFrame frame = EnactmentProcessViewer.this.frame;
 
-		// TODO Adjust when we have a logo (preferably Apollo)
-		// ImageIcon logo = Icons.getIcon(Icons.OPT4J);
-		// frame.setIconImage(logo.getImage());
-		frame.setTitle(ConstantsVisulization.ProcessViewerTitle);
-		frame.setLayout(new BorderLayout());
-		frame.setPreferredSize(new Dimension(800, 600));
+    // TODO Adjust when we have a logo (preferably Apollo)
+    // ImageIcon logo = Icons.getIcon(Icons.OPT4J);
+    // frame.setIconImage(logo.getImage());
+    frame.setTitle(ConstantsVisulization.ProcessViewerTitle);
+    frame.setLayout(new BorderLayout());
+    frame.setPreferredSize(new Dimension(800, 600));
 
-		viewPort.init();
-		toolBar.init();
-		frame.add(viewPort.get(), BorderLayout.CENTER);
-		frame.add(toolBar.get(), BorderLayout.NORTH);
+    viewPort.init();
+    toolBar.init();
+    frame.add(viewPort.get(), BorderLayout.CENTER);
+    frame.add(toolBar.get(), BorderLayout.NORTH);
 
-		// TODO we could add an actual termination of the enactment if the window is
-		// closed (as well as add the option for a termination)
+    // TODO we could add an actual termination of the enactment if the window is
+    // closed (as well as add the option for a termination)
 
-		frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-		frame.pack();
-		frame.setVisible(true);
-		viewPort.addWidget(widget);
-	}
+    frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+    frame.pack();
+    frame.setVisible(true);
+    viewPort.addWidget(widget);
 
-	@Override
-	public void enactmentTerminated() {
-		if (closeOnStop && frame != null) {
-			frame.dispose();
-		}
-	}
+    updateScheduler.scheduleAtFixedRate(this::updateFrame, 0, updatePeriod, TimeUnit.MILLISECONDS);
+  }
 
-	@Override
-	public void enactableStateChanged(Enactable enactable, State previousState, State currentState) {
-		if (frame != null) {
-			frame.repaint();
-		}
-	}
-	
-	@Override
-	public void reactToModelModification() {
-		if (frame != null) {
-			widget.update();
-			frame.repaint();
-		}
-	}
+  @Override
+  public void enactmentTerminated() {
+    if (closeOnStop && frame != null) {
+      frame.dispose();
+    }
+    updateFrame();
+    updateScheduler.shutdown();
+  }
+
+  protected void updateFrame() {
+    if (frame != null) {
+      //widget.update();
+      frame.repaint();
+    }
+  }
+
+  @Override
+  public void reactToModelModification() {
+    System.out.println("reacting");
+    widget.update();
+    frame.repaint();
+  }
 }

@@ -16,30 +16,39 @@ import at.uibk.dps.ee.visualization.process.EnactmentProcessViewer;
  * @author Fedor Smirnov
  */
 @Info("A graphical viewer to observe the enactment process.")
-public class EnactmentViewerModule extends VisualizationModule{
+public class EnactmentViewerModule extends VisualizationModule {
 
-	@Order(1)
-	@Info("If checked, the viewer automatically closes when the Enactment terminates.")
-	@Constant(namespace = EnactmentProcessViewer.class, value = "closeOnTerminate")
-	public boolean closeOnTerminate = true;
+  @Order(1)
+  @Info("If checked, the viewer automatically closes when the Enactment terminates.")
+  @Constant(namespace = EnactmentProcessViewer.class, value = "closeOnTerminate")
+  public boolean closeOnTerminate = true;
 
-	public boolean isCloseOnTerminate() {
-		return closeOnTerminate;
-	}
+  @Order(2)
+  @Info("Controls the rate at which the visualization is refreshed.")
+  @Constant(namespace = EnactmentProcessViewer.class, value = "updatePeriod")
+  public int updatePeriodMs = 100;
 
-	public void setCloseOnTerminate(boolean closeOnTerminate) {
-		this.closeOnTerminate = closeOnTerminate;
-	}
-	
-	@Override
-	protected void config() {
-		bind(Viewport.class).in(SINGLETON);
-		
-		addEnactableStateListener(EnactmentProcessViewer.class);
-		addEnactmentStateListener(EnactmentProcessViewer.class);
-		
-		addToolBarService(ControlToolBarService.class);
-		
-		addModelModificationListener(EnactmentProcessViewer.class);
-	}
+  @Override
+  protected void config() {
+    bind(Viewport.class).in(SINGLETON);
+    addEnactmentStateListener(EnactmentProcessViewer.class);
+    addModelModificationListener(EnactmentProcessViewer.class);
+    addToolBarService(ControlToolBarService.class);
+  }
+
+  public boolean isCloseOnTerminate() {
+    return closeOnTerminate;
+  }
+
+  public void setCloseOnTerminate(boolean closeOnTerminate) {
+    this.closeOnTerminate = closeOnTerminate;
+  }
+
+  public int getUpdatePeriodMs() {
+    return updatePeriodMs;
+  }
+
+  public void setUpdatePeriodMs(int updatePeriodMs) {
+    this.updatePeriodMs = updatePeriodMs;
+  }
 }
