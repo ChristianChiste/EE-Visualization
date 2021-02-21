@@ -20,19 +20,20 @@ import net.sf.opendse.model.Node;
  */
 public class GraphPanelFormatProcess extends GraphPanelFormatModel {
 
-	public GraphPanelFormatProcess(EnactmentGraph originalGraph) {
-		super(originalGraph);
-	}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public Graph<Node, Edge> getGraph() {
-		Graph<?, ?> result = UtilsVizGraph.generateGraphToDraw(originalGraph);
-		return (Graph<Node, Edge>) result;
-	}
+  public GraphPanelFormatProcess(EnactmentGraph originalGraph) {
+    super(originalGraph);
+  }
 
-	@Override
-	public Color getColor(Node node) {
-		return GraphAppearance.getColorProcess(node);
-	}
+  @SuppressWarnings("unchecked")
+  @Override
+  public Graph<Node, Edge> getGraph() {
+    Graph<?, ?> result = UtilsVizGraph.generateGraphToDraw(originalGraph);
+    return (Graph<Node, Edge>) result;
+  }
+
+  @Override
+  public Color getColor(Node node) {
+    return GraphAppearance.getColorProcess(node);
+  }
 }

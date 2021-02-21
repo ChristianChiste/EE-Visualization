@@ -11,7 +11,6 @@ import net.sf.opendse.model.Resource;
 import net.sf.opendse.model.Task;
 import net.sf.opendse.visualization.ElementSelection;
 import net.sf.opendse.visualization.GraphPanel;
-import net.sf.opendse.visualization.GraphPanelFormatArchitecture;
 import net.sf.opendse.visualization.MappingPanel;
 
 /**
@@ -45,9 +44,9 @@ public class EnactmentPanel extends JPanel {
     ElementSelection selection = new ElementSelection();
 
     GraphPanel panelEnactmentGraph =
-        new GraphPanel(new GraphPanelFormatProcess(actualSpec.getEnactmentGraph()), selection);
+        new GraphPanel(new GraphPanelEnactment(actualSpec, selection), selection);
     GraphPanel panelResourceGraph =
-        new GraphPanel(new GraphPanelFormatArchitecture(actualSpec, selection), selection);
+        new GraphPanel(new GraphPanelResources(actualSpec, selection), selection);
     MappingPanel mappingPanel = new MappingPanel(mappings, selection);
 
     JSplitPane splitG = new JSplitPane(HORIZONTAL_SPLIT, panelEnactmentGraph, panelResourceGraph);
