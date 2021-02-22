@@ -6,7 +6,6 @@ import org.junit.Test;
 import net.sf.opendse.model.Communication;
 import net.sf.opendse.model.Dependency;
 import net.sf.opendse.model.Element;
-import net.sf.opendse.model.Resource;
 import net.sf.opendse.model.Task;
 
 public class UtilsVizGraphTest {
@@ -35,11 +34,4 @@ public class UtilsVizGraphTest {
 		assertEquals("bla", result2.getAttribute("commT"));
 		assertEquals(3.2, result3.getAttribute("attrD"), 0.0);
 	}
-	
-	@Test(expected = IllegalArgumentException.class)
-	public void testElementCopyUnknown() {
-		Resource res = new Resource("res");
-		UtilsVizGraph.copy(res);
-	}
-
 }
