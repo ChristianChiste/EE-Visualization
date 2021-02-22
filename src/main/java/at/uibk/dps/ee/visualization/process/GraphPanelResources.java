@@ -8,6 +8,8 @@ import java.util.Random;
 import org.apache.commons.collections15.Transformer;
 import at.uibk.dps.ee.model.graph.EnactmentSpecification;
 import at.uibk.dps.ee.model.graph.ResourceGraph;
+import at.uibk.dps.ee.visualization.constants.GraphAppearance;
+import at.uibk.dps.ee.visualization.utils.UtilsVizGraph;
 import edu.uci.ics.jung.algorithms.layout.FRLayout;
 import edu.uci.ics.jung.algorithms.layout.Layout;
 import edu.uci.ics.jung.graph.DirectedGraph;
@@ -53,7 +55,7 @@ public class GraphPanelResources extends AbstractGraphPanelFormat {
   @SuppressWarnings("unchecked")
   @Override
   public Graph<Node, Edge> getGraph() {
-    Graph<?, ?> g = resGraph;
+    Graph<?, ?> g = UtilsVizGraph.generateResGraphToDraw(resGraph);
     return (Graph<Node, Edge>) g;
   }
 
@@ -82,6 +84,11 @@ public class GraphPanelResources extends AbstractGraphPanelFormat {
   @Override
   public Color getColor(Edge edge) {
     return Graphics.BLACK;
+  }
+
+  @Override
+  public Color getColor(Node node) {
+    return GraphAppearance.getResourceColor((Resource) node);
   }
 
   @Override

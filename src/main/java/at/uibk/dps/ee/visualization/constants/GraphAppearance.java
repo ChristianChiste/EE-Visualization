@@ -7,13 +7,16 @@ import at.uibk.dps.ee.model.properties.PropertyServiceData;
 import at.uibk.dps.ee.model.properties.PropertyServiceData.NodeType;
 import at.uibk.dps.ee.model.properties.PropertyServiceFunction;
 import at.uibk.dps.ee.model.properties.PropertyServiceFunction.UsageType;
+import at.uibk.dps.ee.model.properties.PropertyServiceResource;
 import net.sf.opendse.model.Communication;
 import net.sf.opendse.model.Node;
+import net.sf.opendse.model.Resource;
 import net.sf.opendse.model.Task;
 import net.sf.opendse.visualization.Graphics;
 
 /**
- * Static method container for the configuration of the appearance of the graph visualizations.
+ * Static method container for the configuration of the appearance of the graph
+ * visualizations.
  * 
  * @author Fedor Smirnov
  *
@@ -54,6 +57,11 @@ public final class GraphAppearance {
   protected static final Color colorDecisionTrue = Graphics.BLUE;
   protected static final Color colorDecisionFalse = Graphics.RED;
 
+  // resources
+  protected static final Color colorResRunning = Graphics.GREEN;
+  protected static final Color colorResIdle = Graphics.STEELBLUE;
+
+
   // sizes
   protected static final int sizeFunction = 20;
   protected static final int sizeData = 15;
@@ -63,6 +71,14 @@ public final class GraphAppearance {
    */
   private GraphAppearance() {}
 
+  public static Color getResourceColor(Resource res) {
+    if (PropertyServiceResource.getUsingTaskIds(res).isEmpty()) {
+      return colorResIdle;
+    }else {
+      return colorResRunning;
+    }
+  }
+  
   /**
    * Returns the shape enum for the given node.
    * 
@@ -78,6 +94,7 @@ public final class GraphAppearance {
       throw new IllegalArgumentException("Unknown type of node: " + node.getId());
     }
   }
+  
 
   /**
    * Returns the color for the given node when draws as model visualization.
