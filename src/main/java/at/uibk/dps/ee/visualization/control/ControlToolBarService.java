@@ -27,6 +27,7 @@ public class ControlToolBarService implements ToolBarService {
 		JToolBar toolbar = new JToolBar("Control");
 		toolbar.add(controlButtons.getPlay());
 		toolbar.add(controlButtons.getPause());
+		toolbar.add(controlButtons.getStop());
 		return toolbar;
 	}
 }
