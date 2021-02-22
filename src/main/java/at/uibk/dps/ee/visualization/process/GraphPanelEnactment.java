@@ -114,10 +114,15 @@ public class GraphPanelEnactment extends AbstractGraphPanelFormat {
 
   @Override
   public boolean isActive(Edge edge, Node n0, Node n1) {
-    Pair<Task> endpoints = enactmentGraph.getEndpoints((Dependency) edge);
-    Task t0 = endpoints.getFirst();
-    Task t1 = endpoints.getSecond();
-    return isActive(t0) && isActive(t1);
+    if (enactmentGraph.containsEdge((Dependency) edge) && enactmentGraph.containsVertex((Task) n0)
+        && enactmentGraph.containsVertex((Task) n1)) {
+      Pair<Task> endpoints = enactmentGraph.getEndpoints((Dependency) edge);
+      Task t0 = endpoints.getFirst();
+      Task t1 = endpoints.getSecond();
+      return isActive(t0) && isActive(t1);
+    } else {
+      return false;
+    }
   }
 
   /**
