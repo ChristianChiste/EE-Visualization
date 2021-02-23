@@ -111,7 +111,6 @@ public class EnactmentProcessViewer implements EnactmentStateListener, ModelModi
 
   @Override
   public void reactToModelModification() {
-    System.out.println("reacting");
     widget.update();
     frame.repaint();
   }
