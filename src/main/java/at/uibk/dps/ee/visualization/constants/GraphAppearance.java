@@ -135,7 +135,8 @@ public final class GraphAppearance {
           } else {
             return colorDataUnavailable;
           }
-
+        case Sequentiality:
+          return Graphics.BLACK;
         default:
           throw new IllegalStateException(
               "No color known for data node of type " + nodeType.name());
