@@ -5,7 +5,9 @@ import java.awt.Dimension;
 import java.awt.Shape;
 import java.awt.geom.Point2D;
 import java.util.Random;
-import org.apache.commons.collections15.Transformer;
+
+import com.google.common.base.Function;
+
 import at.uibk.dps.ee.model.graph.EnactmentSpecification;
 import at.uibk.dps.ee.model.graph.ResourceGraph;
 import at.uibk.dps.ee.visualization.constants.GraphAppearance;
@@ -71,9 +73,9 @@ public class GraphPanelResources extends AbstractGraphPanelFormat {
     final Dimension size = layout.getSize();
     final Random random = new Random(0);
 
-    layout.setInitializer(new Transformer<Node, Point2D>() {
+    layout.setInitializer(new Function<Node, Point2D>() {
       @Override
-      public Point2D transform(Node arg0) {
+      public Point2D apply(Node arg0) {
         return new Point2D.Double(size.getWidth() / 2 + random.nextDouble(),
             size.getHeight() / 2 + random.nextDouble());
       }
